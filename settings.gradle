@@ -1,2 +1,2 @@
-include ':app'
+include ':app', ':SlidingMenu-LIB'
 include ':DJI-SDK-LIB'

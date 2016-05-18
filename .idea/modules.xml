@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/DJI-SDK-LIB/DJI-SDK-LIB.iml" filepath="$PROJECT_DIR$/DJI-SDK-LIB/DJI-SDK-LIB.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SlidingMenu-LIB/SlidingMenu-LIB.iml" filepath="$PROJECT_DIR$/SlidingMenu-LIB/SlidingMenu-LIB.iml" />
       <module fileurl="file://$PROJECT_DIR$/UAVision-mobile.iml" filepath="$PROJECT_DIR$/UAVision-mobile.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

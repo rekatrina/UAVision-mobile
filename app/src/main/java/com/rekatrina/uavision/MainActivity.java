@@ -1,6 +1,8 @@
 package com.rekatrina.uavision;
 
 import android.app.Activity;
+
+import android.support.v4.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +18,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+
 import dji.sdk.Camera.DJICamera;
 import dji.sdk.Camera.DJICamera.CameraReceivedVideoDataCallback;
 import dji.sdk.Camera.DJICameraSettingsDef;
@@ -25,7 +30,7 @@ import dji.sdk.base.DJIBaseComponent;
 import dji.sdk.base.DJIBaseProduct;
 import dji.sdk.base.DJIError;
 
-public class MainActivity extends Activity {
+public class MainActivity extends SlidingFragmentActivity {
 
     private static  final String TAG = MainActivity.class.getName();
 
@@ -43,11 +48,11 @@ public class MainActivity extends Activity {
     private TextView recordingTime;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initUI();
-
+        initLeftMenu();
         // The callback for receiving the raw H264 video data for camera live view
         mReceivedVideoDataCallBack = new CameraReceivedVideoDataCallback() {
 
@@ -104,8 +109,27 @@ public class MainActivity extends Activity {
         IntentFilter filter = new IntentFilter();
         filter.addAction(UAVisionApplication.FLAG_CONNECTION_CHANGE);
         registerReceiver(mReceiver, filter);
+
+        // Register the broadcast receiver for receiving batrery.
+        IntentFilter batteryFilter = new IntentFilter();
+        batteryFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
+        registerReceiver(mBatteryReceiver, batteryFilter);
         Log.e(TAG, "onCreate");
     }
+
+    protected BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.ACTION_BATTERY_CHANGED.equals(intent.getAction()))
+            {
+                int level = intent.getIntExtra("level",0); // the second arg is default value
+                int scale = intent.getIntExtra("scale",100);
+                TextView batteryText = (TextView)findViewById(R.id.textView_battery);
+                batteryText.setText((level*100)/scale+"%");
+            }
+        }
+    };
+
     protected BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -113,6 +137,7 @@ public class MainActivity extends Activity {
             onProductChange();
         }
     };
+
     private void updateTitleBar() {
         if(mConnectStatus == null) return;
         boolean ret = false;
@@ -178,6 +203,24 @@ public class MainActivity extends Activity {
 
     }
 
+    private void initLeftMenu(){
+        Fragment leftMenuFragment = new MenuControlFragment();
+        setBehindContentView(R.layout.left_menu_frame);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.left_menu_frame, leftMenuFragment).commit();
+        SlidingMenu menu = getSlidingMenu();
+        menu.setMode(SlidingMenu.LEFT);
+        // 设置触摸屏幕的模式
+        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+        menu.setShadowWidthRes(R.dimen.shadow_width);
+        menu.setShadowDrawable(R.drawable.shadow);
+        // 设置滑动菜单视图的宽度
+        menu.setBehindWidthRes(R.dimen.slidingmenu_offset);
+        // 设置渐入渐出效果的值
+        menu.setFadeDegree(0.35f);
+        menu.setBehindScrollScale(1.0f);
+        // menu.setSecondaryShadowDrawable(R.drawable.shadow);
+    }
 
     @Override
     public void onResume() {

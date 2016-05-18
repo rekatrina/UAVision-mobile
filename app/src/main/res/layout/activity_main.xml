@@ -8,7 +8,7 @@
     <RelativeLayout
         android:id="@+id/main_title_rl"
         android:layout_width="fill_parent"
-        android:layout_height="40dp"
+        android:layout_height="@dimen/title_height"
         android:background="@color/drakGreen" >
 
         <ImageButton
@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="UAVision"
+            android:text="@string/app_name"
             android:textColor="@android:color/white"
             android:textSize="23sp"
             />
@@ -37,7 +37,7 @@
             android:id="@+id/textView_connectStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:text=""
             android:textColor="@android:color/white"
             android:textSize="15sp"
@@ -47,7 +47,7 @@
             android:id="@+id/textView_battery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_below="@id/textView_connectStatus"
             android:text="100%"
             android:textColor="@android:color/white"

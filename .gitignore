@@ -6,4 +6,5 @@
 .DS_Store
 /build
 /DJI-SDK-LIB/build
+/SlidingMenu-LIB/build
 /captures
