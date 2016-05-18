@@ -21,6 +21,8 @@ import android.widget.ToggleButton;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
+import dji.sdk.Battery.DJIBattery;
+import dji.sdk.Battery.DJIBattery.DJIBatteryStateUpdateCallback;
 import dji.sdk.Camera.DJICamera;
 import dji.sdk.Camera.DJICamera.CameraReceivedVideoDataCallback;
 import dji.sdk.Camera.DJICameraSettingsDef;
@@ -46,6 +48,14 @@ public class MainActivity extends SlidingFragmentActivity {
     private Button mCaptureBtn, mShootPhotoModeBtn, mRecordVideoModeBtn;
     private ToggleButton mRecordBtn;
     private TextView recordingTime;
+
+    protected DJIBatteryStateUpdateCallback mBatteryStateUpdateCallback = new DJIBatteryStateUpdateCallback() {
+        @Override
+        public void onResult(DJIBattery.DJIBatteryState djiBatteryState) {
+            TextView textView_uavBattery = (TextView)findViewById(R.id.textView_battery_uav);
+            textView_uavBattery.setText("U"+djiBatteryState.getBatteryEnergyRemainingPercent()+"%");
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -126,6 +136,10 @@ public class MainActivity extends SlidingFragmentActivity {
                 int scale = intent.getIntExtra("scale",100);
                 TextView batteryText = (TextView)findViewById(R.id.textView_battery);
                 batteryText.setText((level*100)/scale+"%");
+//                if((level*100)/scale<40)
+//                    batteryText.setTextColor(0x00FF00);
+//                else
+//                    batteryText.setTextColor(0xFF0000);
             }
         }
     };
@@ -275,9 +289,14 @@ public class MainActivity extends SlidingFragmentActivity {
             }
             if (!mProduct.getModel().equals(DJIBaseProduct.Model.UnknownAircraft)) {
                 DJICamera camera = mProduct.getCamera();
-                if (camera != null){
+                if (camera != null) {
                     // Set the callback
                     camera.setDJICameraReceivedVideoDataCallback(mReceivedVideoDataCallBack);
+                }
+
+                DJIBattery battery = mProduct.getBattery();
+                if(battery != null){
+                    battery.setBatteryStateUpdateCallback(mBatteryStateUpdateCallback);
                 }
             }
         }
@@ -287,7 +306,11 @@ public class MainActivity extends SlidingFragmentActivity {
         DJICamera camera = UAVisionApplication.getCameraInstance();
         if (camera != null){
             // Reset the callback
-            UAVisionApplication.getCameraInstance().setDJICameraReceivedVideoDataCallback(null);
+            camera.setDJICameraReceivedVideoDataCallback(null);
+        }
+        DJIBattery battery = UAVisionApplication.getBatteryInstance();
+        if(battery != null){
+            battery.setBatteryStateUpdateCallback(null);
         }
     }
 

@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import dji.sdk.Battery.DJIBattery;
 import dji.sdk.Camera.DJICamera;
 import dji.sdk.Products.DJIAircraft;
 import dji.sdk.Products.DJIHandHeld;
@@ -53,6 +54,11 @@ public class UAVisionApplication extends Application {
         if (getProductInstance() == null) return null;
         return getProductInstance().getCamera();
 
+    }
+
+    public static synchronized DJIBattery getBatteryInstance(){
+        if(getProductInstance() == null) return null;
+        return getProductInstance().getBattery();
     }
 
     public static boolean isAircraftConnected() {
