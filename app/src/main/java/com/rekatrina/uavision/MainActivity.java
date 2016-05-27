@@ -402,6 +402,26 @@ public class MainActivity extends SlidingFragmentActivity implements MenuControl
                 stopWaypointMission();
                 break;
             }
+            case R.id.btn_send:{
+                if(mFlightController!=null) {
+                    // send data from mobile to onboard
+                    String msg = "hello world";
+                    byte[] data = msg.getBytes();
+                    mFlightController.sendDataToOnboardSDKDevice(data,
+                            new DJIBaseComponent.DJICompletionCallback() {
+                                @Override
+                                public void onResult(DJIError pError) {
+                                    if(pError!=null)
+                                        Toast.makeText(MainActivity.this, pError.getDescription(), Toast.LENGTH_SHORT).show();
+                                        else
+                                        Toast.makeText(MainActivity.this, "send", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                }
+                else
+                    Toast.makeText(MainActivity.this, "Null flightController", Toast.LENGTH_SHORT).show();
+                break;
+            }
             default:
                 break;
         }
@@ -624,18 +644,22 @@ public class MainActivity extends SlidingFragmentActivity implements MenuControl
     private void initTestMission(){
         List<DJIWaypoint> testingWaypoints = new LinkedList<>();
 
-        DJIWaypoint northPoint = new DJIWaypoint(droneLocationLat + 10 * Utils.ONE_METER_OFFSET, droneLocationLng, 10f);
+
+        DJIWaypoint northPoint = new DJIWaypoint(droneLocationLat + 10 * Utils.ONE_METER_OFFSET, droneLocationLng, 20f);
         DJIWaypoint eastPoint = new DJIWaypoint(droneLocationLat, droneLocationLng + 10 * Utils.calcLongitudeOffset(droneLocationLng), 20f);
-        DJIWaypoint southPoint = new DJIWaypoint(droneLocationLat - 10 * Utils.ONE_METER_OFFSET, droneLocationLng, 30f);
-        DJIWaypoint westPoint = new DJIWaypoint(droneLocationLat, droneLocationLng - 10 * Utils.calcLongitudeOffset(droneLocationLng), 40f);
+        DJIWaypoint southPoint = new DJIWaypoint(droneLocationLat - 10 * Utils.ONE_METER_OFFSET, droneLocationLng, 20f);
+        DJIWaypoint westPoint = new DJIWaypoint(droneLocationLat, droneLocationLng - 10 * Utils.calcLongitudeOffset(droneLocationLng), 20f);
+        DJIWaypoint pointHome = new DJIWaypoint(droneLocationLat, droneLocationLng, 10f);
 
         northPoint.addAction(new DJIWaypoint.DJIWaypointAction(DJIWaypoint.DJIWaypointActionType.GimbalPitch, -60));
         southPoint.addAction(new DJIWaypoint.DJIWaypointAction(DJIWaypoint.DJIWaypointActionType.RotateAircraft, 60));
 
+        testingWaypoints.add(pointHome);
         testingWaypoints.add(northPoint);
         testingWaypoints.add(eastPoint);
         testingWaypoints.add(southPoint);
         testingWaypoints.add(westPoint);
+        testingWaypoints.add(pointHome);
 
         mWaypointMission.addWaypoints(testingWaypoints);
     }
