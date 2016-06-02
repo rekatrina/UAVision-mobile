@@ -329,6 +329,7 @@ public class MainActivity extends SlidingFragmentActivity implements MenuControl
         }
         if (mProduct == null || !mProduct.isConnected()) {
             mCamera = null;
+            mFlightController = null;
             showToast("No Connected");
         } else {
             if (null != mVideoSurface) {
@@ -576,6 +577,13 @@ public class MainActivity extends SlidingFragmentActivity implements MenuControl
         if (product != null && product.isConnected()) {
             if (product instanceof DJIAircraft) {
                 mFlightController = ((DJIAircraft) product).getFlightController();
+                mFlightController.setReceiveExternalDeviceDataCallback(new DJIFlightControllerDelegate.FlightControllerReceivedDataFromExternalDeviceCallback() {
+                    @Override
+                    public void onResult(byte[] bytes) {
+                        String msgFromMobile = new String(bytes);
+                        showToast(msgFromMobile);
+                    }
+                });
             }
         }
 

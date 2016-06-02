@@ -6,6 +6,7 @@ package com.rekatrina.uavision;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,21 +14,29 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import dji.sdk.Battery.DJIBattery;
+import dji.sdk.Camera.DJICamera;
 import dji.sdk.FlightController.DJIFlightController;
+import dji.sdk.FlightController.DJIFlightControllerDelegate;
 import dji.sdk.MissionManager.DJICustomMission;
 import dji.sdk.MissionManager.DJIMission;
 import dji.sdk.MissionManager.DJIMissionManager;
 import dji.sdk.MissionManager.DJIWaypointMission;
+import dji.sdk.Products.DJIAircraft;
+import dji.sdk.base.DJIBaseComponent;
+import dji.sdk.base.DJIBaseProduct;
+import dji.sdk.base.DJIError;
 
 
 // fragment as listener is unimplement
 public class MenuControlFragment extends Fragment implements OnClickListener, DJIMissionManager.MissionProgressStatusCallback{
     private View mView = null;
 
+    private DJIBaseProduct mProduct;
     private DJIMissionManager mMissionManager;
     private DJICustomMission mTakeOffMission;
     private DJIMission mMission;
-    private DJIFlightController mFightController;
+    private DJIFlightController mFlightController;
 
     private float altitude = 100.0f;
     private float mSpeed = 10.0f;
@@ -51,7 +60,7 @@ public class MenuControlFragment extends Fragment implements OnClickListener, DJ
         }
         mTakeOffBtn = (Button) mView.findViewById(R.id.btn_takeOff);
         mGoHomeBtn  = (Button) mView.findViewById(R.id.btn_goHome);
-        mRoundBtn = (Button) mView.findViewById(R.id.btn_seeAround);
+        mRoundBtn = (Button) mView.findViewById(R.id.btn_send);
         mTakeOffBtn.setOnClickListener(this);
         mGoHomeBtn.setOnClickListener(this);
         mRoundBtn.setOnClickListener(this);
@@ -80,7 +89,18 @@ public class MenuControlFragment extends Fragment implements OnClickListener, DJ
                 ((MissionClickLinstener)getActivity()).onClick(v);
                 break;
             }
-            case R.id.btn_seeAround:{
+            case R.id.btn_send:{
+//                if(mFlightController)
+//                // send data from mobile to onboard
+//                String msg = "hello world";
+//                byte[] data =msg.getBytes();
+//                mFlightController.sendDataToOnboardSDKDevice(data,
+//                        new DJIBaseComponent.DJICompletionCallback() {
+//                            @Override
+//                            public void onResult(DJIError pError) {
+//                                Toast.makeText(MainActivity.class,"Sended",Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
                 ((MissionClickLinstener)getActivity()).onClick(v);
                 break;
             }
@@ -88,5 +108,19 @@ public class MenuControlFragment extends Fragment implements OnClickListener, DJ
                 break;
         }
 
+    }
+
+    private void initFlightController() {
+        try {
+            mProduct = UAVisionApplication.getProductInstance();
+        }
+        catch(Exception exception){
+            mProduct = null;
+        }
+        if (mProduct == null || !mProduct.isConnected()) {
+                if (mProduct instanceof DJIAircraft) {
+                    mFlightController = ((DJIAircraft) mProduct).getFlightController();
+                }
+        }
     }
 }
